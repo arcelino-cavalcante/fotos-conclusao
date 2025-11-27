@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>9º Ano - A Festa</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: #000;
+            color: #fff;
+            overflow-x: hidden;
+        }
+
+        /* Neon Red Glow */
+        .neon-text {
+            text-shadow: 0 0 10px #ff0000, 0 0 20px #ff0000, 0 0 40px #ff0000;
+        }
+
+        .neon-border {
+            box-shadow: 0 0 10px #ff0000, 0 0 20px #ff0000;
+            border-color: #ff0000;
+        }
+
+        .btn-neon {
+            background: linear-gradient(45deg, #ff0000, #990000);
+            box-shadow: 0 0 15px #ff0000;
+            transition: all 0.3s ease;
+        }
+
+        .btn-neon:active {
+            transform: scale(0.95);
+            box-shadow: 0 0 5px #ff0000;
+        }
+
+        @keyframes pulse-red {
+            0% {
+                box-shadow: 0 0 0 0 rgba(255, 0, 0, 0.7);
+            }
+
+            70% {
+                box-shadow: 0 0 0 20px rgba(255, 0, 0, 0);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(255, 0, 0, 0);
+            }
+        }
+
+        .pulse-btn {
+            animation: pulse-red 2s infinite;
+        }
+    </style>
+</head>
+
+<body
+    class="min-h-screen flex flex-col items-center justify-center p-4 bg-[url('https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?q=80&w=1920&auto=format&fit=crop')] bg-cover bg-center bg-no-repeat bg-blend-multiply">
+
+    <div class="absolute inset-0 bg-black/80 z-0"></div>
+
+    <div class="w-full max-w-md mx-auto relative z-10">
+        <!-- HEADER -->
+        <div class="text-center mb-8">
+            <h1 class="text-4xl font-black tracking-tighter neon-text italic">9º ANO</h1>
+            <p class="text-red-500 font-bold tracking-[0.5em] text-sm mt-1">ELIEL PEIXOTO 2025</p>
+        </div>
+
+        <!-- TELA 1: INTRO -->
+        <div id="screen-intro" class="text-center">
+            <div class="bg-black/50 backdrop-blur-md border border-red-900/50 p-8 rounded-2xl shadow-2xl">
+                <p class="text-gray-300 mb-8 text-lg">Faça parte do show! Sua foto vai direto para o telão do DJ.</p>
+
+                <button onclick="openCamera()"
+                    class="w-full btn-neon text-white font-black text-xl py-6 rounded-xl flex items-center justify-center gap-3 pulse-btn">
+                    <i class="fas fa-camera"></i> TIRAR FOTO
+                </button>
+            </div>
+        </div>
+
+        <!-- TELA 2: CÂMERA (Instagram Style) -->
+        <div id="screen-camera" class="hidden fixed inset-0 z-50 bg-black flex flex-col">
+            <!-- Top Bar -->
+            <div
+                class="absolute top-0 left-0 w-full p-4 z-20 flex justify-between items-center bg-gradient-to-b from-black/50 to-transparent">
+                <button onclick="closeCamera()" class="text-white text-2xl drop-shadow-md"><i
+                        class="fas fa-times"></i></button>
+                <div class="text-white font-bold tracking-widest text-sm drop-shadow-md">9º ANO</div>
+                <div class="w-8"></div> <!-- Spacer -->
+            </div>
+
+            <!-- Video Preview (Full Screen) -->
+            <video id="video" autoplay playsinline class="w-full h-full object-cover transform scale-x-[-1]"></video>
+
+            <!-- Bottom Controls -->
+            <div
+                class="absolute bottom-0 left-0 w-full p-8 pb-12 bg-gradient-to-t from-black/70 via-black/30 to-transparent flex justify-around items-center z-20">
+
+                <!-- Gallery/Placeholder (Left) -->
+                <div class="w-12 h-12 rounded-lg bg-white/10 border border-white/30"></div>
+
+                <!-- Shutter Button (Center) -->
+                <button onclick="takePhoto()"
+                    class="w-20 h-20 rounded-full border-4 border-white flex items-center justify-center shadow-lg active:scale-90 transition-transform bg-transparent">
+                    <div class="w-16 h-16 rounded-full bg-white hover:bg-gray-200 transition"></div>
+                </button>
+
+                <!-- Switch Camera (Right) -->
+                <button onclick="switchCamera()"
+                    class="w-12 h-12 rounded-full bg-black/30 backdrop-blur-md flex items-center justify-center text-white text-xl border border-white/20 active:rotate-180 transition-all duration-500">
+                    <i class="fas fa-sync-alt"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- TELA 3: RESULTADO -->
+        <div id="screen-result" class="hidden flex flex-col items-center w-full">
+
+            <img id="finalImage" class="w-full rounded-xl shadow-2xl border-2 border-red-600 neon-border mb-6"
+                alt="Sua foto">
+
+            <!-- Action Buttons -->
+            <div id="action-buttons" class="grid grid-cols-1 gap-4 w-full">
+                <button onclick="uploadPhoto()"
+                    class="btn-neon text-white font-black text-xl py-4 rounded-xl flex items-center justify-center gap-3 pulse-btn">
+                    <i class="fas fa-paper-plane"></i> ENVIAR PRO TELÃO
+                </button>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <button onclick="downloadImage()"
+                        class="bg-gray-800 hover:bg-gray-700 text-white font-bold py-4 rounded-xl flex items-center justify-center gap-2 border border-gray-600">
+                        <i class="fas fa-download"></i> Salvar
+                    </button>
+                    <button onclick="resetApp()"
+                        class="bg-gray-800 hover:bg-gray-700 text-white font-bold py-4 rounded-xl flex items-center justify-center gap-2 border border-gray-600">
+                        <i class="fas fa-trash"></i> Descartar
+                    </button>
+                </div>
+            </div>
+
+            <!-- Success Message (Hidden by default) -->
+            <div id="success-message" class="hidden flex-col items-center justify-center w-full animate-pulse">
+                <div
+                    class="w-20 h-20 bg-green-500 rounded-full flex items-center justify-center mb-4 shadow-[0_0_20px_rgba(34,197,94,0.8)]">
+                    <i class="fas fa-check text-4xl text-white"></i>
+                </div>
+                <h2 class="text-2xl font-black text-green-500 mb-2">ENVIADA!</h2>
+                <p class="text-gray-300 text-center mb-6">Olhe para o telão agora!</p>
+                <button onclick="resetApp()"
+                    class="w-full bg-gray-800 text-white font-bold py-4 rounded-xl border border-gray-600">
+                    <i class="fas fa-camera"></i> Tirar Outra
+                </button>
+            </div>
+
+            <!-- Loading State -->
+            <div id="uploading-state" class="hidden flex-col items-center justify-center w-full">
+                <i class="fas fa-circle-notch fa-spin text-4xl text-red-500 mb-4"></i>
+                <p class="text-red-500 font-bold">Enviando...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hidden Canvas -->
+    <canvas id="photoCanvas" class="hidden"></canvas>
+
+    <!-- Firebase Script -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyC-GQSHcVoUL-3vNjQ9nhj9-BmqVjIPYDM",
+            authDomain: "app-conclusao.firebaseapp.com",
+            projectId: "app-conclusao",
+            storageBucket: "app-conclusao.firebasestorage.app",
+            messagingSenderId: "1033654845814",
+            appId: "1:1033654845814:web:dbe2fcb15e655fc7413a57"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+
+        window.saveToFirestore = async (base64Image) => {
+            try {
+                if (!auth.currentUser) await signInAnonymously(auth);
+
+                await addDoc(collection(db, "party_gallery"), {
+                    image: base64Image,
+                    timestamp: serverTimestamp()
+                });
+                return true;
+            } catch (error) {
+                console.error("Erro upload", error);
+                throw error;
+            }
+        };
+    </script>
+
+    <script>
+        let videoStream = null, currentFacingMode = 'user';
+
+        function showScreen(id) {
+            ['screen-intro', 'screen-camera', 'screen-result'].forEach(s => document.getElementById(s).classList.add('hidden'));
+            document.getElementById(id).classList.remove('hidden');
+        }
+
+        async function openCamera() {
+            if (videoStream) videoStream.getTracks().forEach(t => t.stop());
+            try {
+                videoStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: currentFacingMode, width: { ideal: 1280 }, height: { ideal: 1280 } } });
+                const video = document.getElementById('video');
+                video.srcObject = videoStream;
+                video.style.transform = currentFacingMode === 'user' ? 'scaleX(-1)' : 'scaleX(1)';
+                showScreen('screen-camera');
+            } catch (e) { alert("Erro câmera: " + e.message); }
+        }
+
+        function switchCamera() { currentFacingMode = currentFacingMode === 'user' ? 'environment' : 'user'; openCamera(); }
+        function closeCamera() { if (videoStream) videoStream.getTracks().forEach(t => t.stop()); showScreen('screen-intro'); }
+
+        function takePhoto() {
+            const video = document.getElementById('video');
+            const cvs = document.getElementById('photoCanvas');
+            const ctx = cvs.getContext('2d');
+
+            cvs.width = video.videoWidth;
+            cvs.height = video.videoHeight;
+
+            if (currentFacingMode === 'user') {
+                ctx.translate(cvs.width, 0);
+                ctx.scale(-1, 1);
+            }
+            ctx.drawImage(video, 0, 0);
+
+            // Add Watermark (Optional / Subtle)
+            ctx.setTransform(1, 0, 0, 1, 0, 0); // Reset transform
+            ctx.fillStyle = "rgba(255, 255, 255, 0.5)";
+            ctx.font = "bold 20px Montserrat";
+            ctx.textAlign = "right";
+            ctx.fillText("9º ANO - 2025", cvs.width - 20, cvs.height - 20);
+
+            const finalData = cvs.toDataURL('image/jpeg', 0.8);
+            document.getElementById('finalImage').src = finalData;
+
+            closeCamera();
+
+            // Reset UI states
+            document.getElementById('action-buttons').classList.remove('hidden');
+            document.getElementById('success-message').classList.add('hidden');
+            document.getElementById('uploading-state').classList.add('hidden');
+
+            showScreen('screen-result');
+
+            // Auto-upload removed. Waiting for user action.
+        }
+
+        async function uploadPhoto() {
+            const imgData = document.getElementById('finalImage').src;
+
+            // Show loading
+            document.getElementById('action-buttons').classList.add('hidden');
+            document.getElementById('uploading-state').classList.remove('hidden');
+            document.getElementById('uploading-state').classList.add('flex');
+
+            try {
+                if (window.saveToFirestore) {
+                    await window.saveToFirestore(imgData);
+
+                    // Show success
+                    document.getElementById('uploading-state').classList.add('hidden');
+                    document.getElementById('uploading-state').classList.remove('flex');
+                    document.getElementById('success-message').classList.remove('hidden');
+                    document.getElementById('success-message').classList.add('flex');
+                }
+            } catch (e) {
+                alert("Erro ao enviar: " + e.message);
+                // Restore buttons
+                document.getElementById('uploading-state').classList.add('hidden');
+                document.getElementById('action-buttons').classList.remove('hidden');
+            }
+        }
+
+        function downloadImage() {
+            const a = document.createElement('a');
+            a.download = `party-${Date.now()}.jpg`;
+            a.href = document.getElementById('finalImage').src;
+            a.click();
+        }
+
+        function resetApp() { showScreen('screen-intro'); }
+    </script>
+</body>
+
+</html>
